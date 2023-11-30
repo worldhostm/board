@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic"><head>
+<meta charset="UTF-8">
+<title>롤 페이지 만들거</title>
+</head>
+<th:block layout:fragment="content">
+    <div class="page_tits">
+        <h3>롤 페이지 만들거</h3>
+        <p class="path"><strong>현재 위치 :</strong> <span>롤 페이지 </span> </p>
+    </div>
+    <div class="content">
+    <section>
+		<button onclick="testCallApi();">호출</button>
+			<table  class="tb tb_col">
+			<colgroup>
+                <col style="width:15%;"/>
+                <col style="width:15%;"/>
+                <col style="width:15%;"/>
+                <col style="width:15%;"/>
+                <col style="width:15%;"/>
+                <col style="width:15%;"/>
+                <col style="width:15%;"/>
+            </colgroup>
+			<thead>
+				<tr>
+					<th scpoe="col">statnId</th>
+					<th scpoe="col">statnNm</th>
+					<th scpoe="col">subwayId</th>
+					<th scpoe="col">subwayNm</th>
+					<th scpoe="col">recptnDt</th>
+					<th scpoe="col">상하</th>
+					<th scpoe="col">종착역</th>
+				</tr>
+			</thead>
+				<tbody id="showcontents">
+					
+				</tbody> 
+			</table>
+	</section>
+    </div>
+    
+</th:block>
+<th:block layout:fragment="script">
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+		window.onload = () => {
+			testCallApi(); 
+		}
+		
+		let html = '';
+		/**
+		지하철 실시간 열차위치정보
+		http://swopenAPI.seoul.go.kr/api/subway/(인증키)/json/realtimePosition/0/5/1호선
+		*/
+		const authkey = [[ ${authkey} ]];
+		
+		function testCallApi(){
+			let uri  = "http://swopenapi.seoul.go.kr/api/subway/" + authkey + "/json/realtimePosition/0/5/4%ED%98%B8%EC%84%A0";
+			const response = getJson(uri);
+			
+			const showcontents = document.querySelector('#showcontents');
+			
+			for(let i = 0; i<response.realtimePositionList.length; i++){
+				html += `<tr>
+							 <td>${response.realtimePositionList[i].statnId} </td>
+							 <td>${response.realtimePositionList[i].statnNm} </td>
+							 <td>${response.realtimePositionList[i].subwayId}</td>
+							 <td>${response.realtimePositionList[i].subwayNm}</td>
+							 <td>${response.realtimePositionList[i].recptnDt}</td>
+							 <td>${response.realtimePositionList[i].updnLine == 1 ? '상행':'하행'} </td>
+							 <td>${response.realtimePositionList[i].statnTnm}</td>
+						 <tr>`;
+			}
+			console.log('html' + html);
+			document.getElementById('showcontents').innerHTML = html;
+			
+			console.log(response.realtimePositionList);
+		}
+		
+		/*]]>*/
+	</script>
+</th:block>
+</html>
